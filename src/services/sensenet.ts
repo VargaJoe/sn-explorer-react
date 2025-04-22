@@ -23,7 +23,7 @@ export const loadChildren = async (path = ConstantContent.PORTAL_ROOT.Path) => {
     const result = await repository.loadCollection({
       path,
       oDataOptions: {
-        select: ['Id', 'Path', 'Name', 'DisplayName', 'Description', 'Icon', 'Type', 'IsFolder'],
+        select: ['Id', 'Path', 'Name', 'DisplayName', 'Description', 'Icon', 'Type', 'IsFolder', 'CreationDate', 'ModificationDate', 'Size'],
         orderby: [['IsFolder', 'desc'], ['DisplayName', 'asc']],
         expand: ['Actions'],
         top: 100,
