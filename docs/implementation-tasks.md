@@ -1,77 +1,93 @@
 # Implementation Tasks - SenseNet Explorer React
 
-## Project Overview
-This project is a Windows Explorer-like content manager for SenseNet CMS built with React and TypeScript.
+A Windows Explorer-like content manager for SenseNet CMS, supporting all SenseNet content types and modern ECM features.
 
-## Current Status
-- **Date**: 2025-07-06
-- **Branch**: feature/login-ui-header-integration
-- **Status**: Login UI integration in progress
+---
 
-## Completed Features
-1. **Basic Project Structure**
-   - React app with TypeScript
-   - Material-UI for UI components
-   - SenseNet client integration
-   - Router configuration for navigation
+## Completed Stories
 
-2. **Core Components**
-   - **TreeExplorer**: Left sidebar with hierarchical folder navigation
-   - **ContentList**: Main content area with table view of files/folders
-   - **ActionToolbar**: Top toolbar with action buttons (New, Cut, Copy, Rename, Sort)
-   - **App**: Main application component with layout and theming
+### Initial Project Setup
+- [x] Create React app with TypeScript
+- [x] Add Material-UI for UI components
+- [x] Integrate SenseNet client
+- [x] Set up router for navigation
+- [x] Implement TreeExplorer (sidebar navigation)
+- [x] Implement ContentList (main content area)
+- [x] Implement ActionToolbar (top action bar)
+- [x] Add responsive layout and theming
+- [x] Add breadcrumb navigation
+- [x] Add loading states and icons
+- [x] Implement OIDC authentication (login/logout UI)
+- [x] Remove deprecated local authentication code
+- [x] Add authentication guide documentation
 
-3. **Services**
-   - **sensenet.ts**: Service layer for SenseNet API communication
-   - Repository configuration for https://insql-daily.test.sensenet.cloud
+---
 
-4. **UI Features**
-   - Responsive layout with resizable panels
-   - Material-UI theming
-   - Breadcrumb navigation
-   - Loading states
-   - Icon support for files and folders
+## In Progress Stories
 
-5. **Authentication**
-   - Switched OIDC authentication to use a singleton browser history object from the 'history' package for compatibility with @sensenet/authentication-oidc-react. This should resolve the spinner/loading issue and allow login/logout UI to appear and function.
-   - Created LoginPage component with Material-UI and OIDC login, loading, and error states.
-   - Created feature/login-ui-header-integration branch to integrate LoginPage into routing and header, and to complete login/logout UI flow.
-   - Updated LoginButton to use routing (navigates to /login) and show user info if logged in.
-   - Improved LoginPage to redirect to home if already authenticated and added a back button.
+### Story 01: Navigation - Tree View
+- [ ] Display hierarchical tree of folders and containers
+- [ ] Expand/collapse nodes and load children on demand
+- [ ] Sync selection with main content area
+- [ ] Highlight current path
 
-## Current Architecture
-- **Frontend**: React 19.1.0 with TypeScript
-- **UI Library**: Material-UI 7.0.2
-- **CMS Backend**: SenseNet (via @sensenet/client-core)
-- **State Management**: React hooks (useState, useEffect)
-- **Routing**: React Router DOM 6.22.3
+### Story 02: Navigation - Breadcrumbs
+- [ ] Show breadcrumb navigation bar
+- [ ] Each segment is clickable
+- [ ] Sync with tree and main view
 
-## Next Steps
-- Integrate logout and authentication state handling for a user-friendly experience
-- Test the full login/logout flow in the UI
-- Implement action toolbar functionality
-- Add context menus
-- Implement file operations (create, delete, rename)
-- Add search functionality
-- Implement drag & drop
-- Add file preview capabilities
-- Add authentication/authorization
-- Implement responsive design improvements
+### Story 03: Content Listing
+- [ ] List all items in selected container
+- [ ] Show name, type, icon, modified date, etc.
+- [ ] Support all SenseNet content types
+- [ ] Double-click to navigate into folders
+- [ ] Sorting and basic filtering
 
-## Technical Notes
-- Using Windows platform with PowerShell
-- Repository URL: https://insql-daily.test.sensenet.cloud
-- Clean code and modular design principles applied
+---
 
-## 2025-07-06
-- Created `feature/initial-repair` branch for bugfixes and project kickoff
-- Improved sensenetService.loadChildren to use robust query and log API results for debugging item listing issues
-- Added debug output to ContentList to help diagnose empty folder listings
-- Switched OIDC authentication to use a singleton browser history object from the 'history' package for compatibility with @sensenet/authentication-oidc-react. This should resolve the spinner/loading issue and allow login/logout UI to appear and function.
-- Committed initial repair changes to feature/initial-repair branch
-- Created feature/login-ui-header-integration branch for login UI integration
-- Updated LoginButton and LoginPage for improved login/logout flow
+## Planned Stories
 
-## [2025-07-06] - feature/initial-repair
-- Committed all staged, modified, and new files with message: 'chore: stage all current changes, add new files, update docs and service, clean state before next feature'.
-- Project is now in a clean state for the next feature or fix.
+### Story 04: Search
+- [ ] Add search bar to main view
+- [ ] Search by name, type, metadata
+- [ ] Update content list and highlight matches
+
+### Story 05: File and Folder Operations (CRUD)
+- [ ] Context menu and toolbar actions (create, rename, move, copy, delete)
+- [ ] Drag & drop for move/copy
+- [ ] Confirmation dialogs for destructive actions
+- [ ] Real-time UI updates
+
+### Story 06: File Preview and Details
+- [ ] Preview pane or modal for supported file types
+- [ ] Details panel for metadata, version, permissions
+- [ ] Support all SenseNet content types
+
+### Story 07: Permissions and Sharing
+- [ ] UI to view/manage permissions and sharing
+- [ ] Grant/revoke access to users/groups
+- [ ] Show effective permissions
+
+### Story 08: Trash / Recycle Bin
+- [ ] Move deleted items to trash
+- [ ] Trash accessible from navigation
+- [ ] Restore or permanently delete from trash
+- [ ] Bulk restore/delete
+
+### Story 09: Bulk Actions
+- [ ] Multi-select in content list
+- [ ] Bulk operations in toolbar/context menu
+- [ ] Progress and error reporting
+
+### Story 10: Support for All SenseNet Content Types
+- [ ] UI supports all major SenseNet content types
+- [ ] Creation dialogs/forms adapt to type
+- [ ] Icons and metadata reflect type
+- [ ] Filtering/search across all types
+
+### Story 11: Dynamic Content Type Handling and Custom Views
+- [ ] Detect and support new or custom content types at runtime
+- [ ] Fetch and render custom fields/metadata for any content type
+- [ ] Dynamically generate browse and edit views based on type schema
+- [ ] Allow setting different default views (list, grid, form, preview) per content type
+- [ ] Provide extensibility for future content types and custom editors
