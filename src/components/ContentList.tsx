@@ -60,6 +60,7 @@ const ContentList: React.FC<ContentListProps> = ({ currentPath, onPathChange }) 
   ]);
 
   useEffect(() => {
+    console.log('ContentList: currentPath', currentPath); // Debug log
     fetchContents(currentPath);
     updateBreadcrumbs(currentPath);
   }, [currentPath]);
@@ -68,7 +69,7 @@ const ContentList: React.FC<ContentListProps> = ({ currentPath, onPathChange }) 
     setIsLoading(true);
     try {
       const items = await sensenetService.loadChildren(path);
-      console.log('API response items:', items); // Debug log
+      console.log('ContentList: API response items:', items); // Debug log
       setContents(items);
     } catch (error) {
       console.error('Error fetching contents:', error);
