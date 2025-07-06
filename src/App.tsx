@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  CssBaseline, 
-  ThemeProvider, 
-  createTheme, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
+import {
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  AppBar,
+  Toolbar,
+  Typography,
   Box,
   Stack,
   Paper
@@ -13,11 +13,13 @@ import {
 import ContentList from './components/ContentList';
 import TreeExplorer from './components/TreeExplorer';
 import ActionToolbar from './components/ActionToolbar';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 import { AppProviders } from './AppProviders';
 import LoginButton from './components/LoginButton';
-import { AuthProvider } from './AuthProvider';
+import LoginPage from './components/LoginPage';
+import { OidcSecure } from '@sensenet/authentication-oidc-react';
+import { browserHistory } from './AppProviders';
 
 const theme = createTheme({
   palette: {
@@ -56,11 +58,7 @@ const ExplorerContent = () => {
   return (
     <>
       <ActionToolbar />
-      <Stack 
-        direction="row" 
-        spacing={2} 
-        sx={{ height: 'calc(100vh - 128px)' }}
-      >
+      <Stack direction="row" spacing={2} sx={{ height: 'calc(100vh - 128px)' }}>
         <Paper 
           elevation={1} 
           sx={{ 
@@ -83,8 +81,8 @@ const ExplorerContent = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <AppProviders>
+    <AppProviders>
+      <Router>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <AppBar position="static">
@@ -97,12 +95,20 @@ const App: React.FC = () => {
           </AppBar>
           <Box sx={{ p: 2, height: 'calc(100vh - 64px)' }}>
             <Routes>
-              <Route path="/*" element={<ExplorerContent />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/*"
+                element={
+                  <OidcSecure history={browserHistory}>
+                    <ExplorerContent />
+                  </OidcSecure>
+                }
+              />
             </Routes>
           </Box>
         </ThemeProvider>
-      </AppProviders>
-    </Router>
+      </Router>
+    </AppProviders>
   );
 };
 
