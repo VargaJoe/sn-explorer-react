@@ -15,6 +15,9 @@ import TreeExplorer from './components/TreeExplorer';
 import ActionToolbar from './components/ActionToolbar';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
+import { AppProviders } from './AppProviders';
+import LoginButton from './components/LoginButton';
+import { AuthProvider } from './AuthProvider';
 
 const theme = createTheme({
   palette: {
@@ -80,23 +83,26 @@ const ExplorerContent = () => {
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Sensenet Content Explorer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Box sx={{ p: 2, height: 'calc(100vh - 64px)' }}>
-          <Routes>
-            <Route path="/*" element={<ExplorerContent />} />
-          </Routes>
-        </Box>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <AppProviders>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Sensenet Content Explorer
+              </Typography>
+              <LoginButton />
+            </Toolbar>
+          </AppBar>
+          <Box sx={{ p: 2, height: 'calc(100vh - 64px)' }}>
+            <Routes>
+              <Route path="/*" element={<ExplorerContent />} />
+            </Routes>
+          </Box>
+        </ThemeProvider>
+      </AppProviders>
+    </Router>
   );
 };
 
