@@ -20,6 +20,7 @@ A Windows Explorer-like content manager for SenseNet CMS, supporting all SenseNe
 - [x] Implement OIDC authentication (login/logout UI)
 - [x] Remove deprecated local authentication code
 - [x] Add authentication guide documentation
+- [x] Add enhanced debug logging to TreeExplorer.tsx to trace the output of sensenetService.loadChildren and the state of treeData after loading the root node. Now always shows the root node even if it has no children, to ensure the tree is never empty. (2025-07-06)
 
 ---
 

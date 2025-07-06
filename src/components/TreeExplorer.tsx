@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  TreeView, 
-  TreeItem 
-} from '@mui/lab';
 import {
   Box,
   CircularProgress,
   Typography
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import sensenetService from '../services/sensenet';
 
 interface TreeExplorerProps {
@@ -31,6 +25,7 @@ interface TreeNode {
   id: string;
   name: string;
   path: string;
+  type: string;
   children: TreeNode[];
   isLoaded: boolean;
 }
@@ -78,10 +73,13 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
   const loadNodeChildren = async (path: string) => {
     setIsLoading(true);
     try {
-      const contents = await sensenetService.loadChildren(path);
+      let contents = await sensenetService.loadChildren(path);
       const folderContents = contents.filter((content: Content) => content.IsFolder);
-      
       updateTreeWithNewNodes(path, folderContents);
+      // If loading root, expand all its children by default
+      if (path === '/Root') {
+        setExpandedNodes(['/Root', ...folderContents.map(f => f.Path)]);
+      }
     } catch (error) {
       console.error('Error fetching tree nodes:', error);
     } finally {
@@ -94,16 +92,18 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
       id: child.Path,
       name: child.DisplayName || child.Name,
       path: child.Path,
+      type: child.Type,
       children: [],
       isLoaded: false
     }));
-    
     setTreeData(prevTree => {
-      if (parentPath === '/Root' && prevTree.length === 0) {
+      if (parentPath === '/Root') {
+        // Always update root node's children and isLoaded
         return [{
           id: '/Root',
           name: 'Root',
           path: '/Root',
+          type: 'PortalRoot',
           children: childNodes,
           isLoaded: true
         }];
@@ -111,7 +111,6 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
       
       // Deep clone the tree and update the specific node
       const updatedTree = JSON.parse(JSON.stringify(prevTree));
-      
       const updateNode = (nodes: TreeNode[]): boolean => {
         for (let i = 0; i < nodes.length; i++) {
           if (nodes[i].path === parentPath) {
@@ -119,8 +118,6 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
             nodes[i].isLoaded = true;
             return true;
           }
-          
-          // Fix TypeScript errors by ensuring children is an array before checking length
           const nodeChildren = nodes[i].children;
           if (nodeChildren && nodeChildren.length > 0) {
             if (updateNode(nodeChildren)) {
@@ -130,13 +127,14 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
         }
         return false;
       };
-      
       updateNode(updatedTree);
       return updatedTree;
     });
   };
 
   const handleNodeToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+    // Always keep /Root expanded
+    if (!nodeIds.includes('/Root')) nodeIds.push('/Root');
     setExpandedNodes(nodeIds);
     
     // Load children for newly expanded nodes
@@ -172,45 +170,38 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
     onPathChange(nodeId);
   };
 
-  const renderTree = (nodes: TreeNode[]) => {
-    return nodes.map((node) => (
-      <TreeItem 
-        key={node.id} 
-        nodeId={node.path} 
-        label={node.name}
-        icon={<FolderIcon sx={{ color: '#f8d775' }} />}
-        expandIcon={<ChevronRightIcon />}
-        collapseIcon={<ExpandMoreIcon />}
-      >
-        {node.children && node.children.length > 0
-          ? renderTree(node.children)
-          : null}
-      </TreeItem>
-    ));
-  };
-
   return (
     <Box sx={{ p: 1, height: '100%' }}>
       <Typography variant="subtitle1" gutterBottom>
         Folder Explorer
       </Typography>
-      
       {isLoading && treeData.length === 0 ? (
         <Box display="flex" justifyContent="center" my={4}>
           <CircularProgress size={24} />
         </Box>
       ) : (
-        <TreeView
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
-          expanded={expandedNodes}
-          selected={selectedNode}
-          onNodeToggle={handleNodeToggle}
-          onNodeSelect={handleNodeSelect}
-          sx={{ flexGrow: 1, overflow: 'auto' }}
-        >
-          {renderTree(treeData)}
-        </TreeView>
+        <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+          {treeData.length > 0 && treeData[0].children.map(child => (
+            <li key={child.id}>
+              <button
+                style={{
+                  background: child.path === selectedNode ? '#e3f2fd' : 'none',
+                  border: 'none',
+                  color: '#1976d2',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  textAlign: 'left',
+                  width: '100%',
+                  fontWeight: child.path === selectedNode ? 'bold' : 'normal',
+                }}
+                onClick={() => handleNodeSelect(null as any, child.path)}
+              >
+                <FolderIcon sx={{ color: '#f8d775', verticalAlign: 'middle', mr: 1 }} />
+                {child.name}
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </Box>
   );
