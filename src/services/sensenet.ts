@@ -3,16 +3,20 @@ import { ConstantContent } from '@sensenet/client-core'
 import axios from 'axios'
 
 // Create and configure a Repository instance
-const createRepository = () => {
-  const repository = new Repository({
-    repositoryUrl: 'https://insql-daily.test.sensenet.cloud',
-    requiredSelect: ['Id', 'Path', 'Name', 'Type', 'DisplayName', 'Icon', 'IsFolder'],
-  })
-  return repository
-}
+const repository = new Repository({
+  repositoryUrl: 'https://insql-daily.test.sensenet.cloud',
+  requiredSelect: ['Id', 'Path', 'Name', 'Type', 'DisplayName', 'Icon', 'IsFolder'],
+})
 
-// Create repository instance
-const repository = createRepository()
+export const setRepositoryAccessToken = (token: string) => {
+  // Patch the repository instance to inject the access token for all requests
+  const origFetch = repository.fetch
+  repository.fetch = (input: RequestInfo, init?: RequestInit) => {
+    const headers = new Headers(init?.headers || {})
+    if (token) headers.set('Authorization', `Bearer ${token}`)
+    return origFetch.call(repository, input, { ...init, headers })
+  }
+}
 
 /**
  * Loads children of a content

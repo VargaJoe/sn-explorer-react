@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AuthenticationProvider, useOidcAuthentication } from '@sensenet/authentication-oidc-react';
-import { Repository } from '@sensenet/client-core';
 import { RepositoryContext } from '@sensenet/hooks-react';
-import { configuration, repositoryUrl } from './configuration';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { configuration } from './configuration';
+import { setRepositoryAccessToken } from './services/sensenet';
+import { createBrowserHistory } from 'history';
+
+// Create a singleton browser history instance
+export const browserHistory = createBrowserHistory();
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  console.log('AppProviders mounted');
   return (
     <AuthProvider>
       <RepositoryProvider>
@@ -16,22 +20,27 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const history = {
-    location,
-    push: navigate,
-  };
+  console.log('AuthProvider mounted, configuration:', configuration);
+  // Use the singleton browserHistory for OIDC provider
   return (
-    <AuthenticationProvider configuration={configuration} history={history}>
+    <AuthenticationProvider configuration={configuration} history={browserHistory}>
       {children}
     </AuthenticationProvider>
   );
 };
 
 export const RepositoryProvider = ({ children }: { children: React.ReactNode }) => {
+  const { oidcUser, isLoading, error } = useOidcAuthentication();
+  useEffect(() => {
+    console.log('RepositoryProvider: oidcUser', oidcUser, 'isLoading', isLoading, 'error', error);
+    if (oidcUser?.access_token) {
+      setRepositoryAccessToken(oidcUser.access_token);
+    }
+  }, [oidcUser, isLoading, error]);
+  // Use the singleton repository instance from sensenetService
+  const { repository } = require('./services/sensenet');
   return (
-    <RepositoryContext.Provider value={new Repository({ repositoryUrl })}>
+    <RepositoryContext.Provider value={repository}>
       {children}
     </RepositoryContext.Provider>
   );

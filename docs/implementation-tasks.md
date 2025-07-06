@@ -5,8 +5,8 @@ This project is a Windows Explorer-like content manager for SenseNet CMS built w
 
 ## Current Status
 - **Date**: 2025-07-06
-- **Branch**: develop
-- **Status**: Initial project analysis completed
+- **Branch**: feature/login-ui-header-integration
+- **Status**: Login UI integration in progress
 
 ## Completed Features
 1. **Basic Project Structure**
@@ -32,6 +32,13 @@ This project is a Windows Explorer-like content manager for SenseNet CMS built w
    - Loading states
    - Icon support for files and folders
 
+5. **Authentication**
+   - Switched OIDC authentication to use a singleton browser history object from the 'history' package for compatibility with @sensenet/authentication-oidc-react. This should resolve the spinner/loading issue and allow login/logout UI to appear and function.
+   - Created LoginPage component with Material-UI and OIDC login, loading, and error states.
+   - Created feature/login-ui-header-integration branch to integrate LoginPage into routing and header, and to complete login/logout UI flow.
+   - Updated LoginButton to use routing (navigates to /login) and show user info if logged in.
+   - Improved LoginPage to redirect to home if already authenticated and added a back button.
+
 ## Current Architecture
 - **Frontend**: React 19.1.0 with TypeScript
 - **UI Library**: Material-UI 7.0.2
@@ -40,6 +47,8 @@ This project is a Windows Explorer-like content manager for SenseNet CMS built w
 - **Routing**: React Router DOM 6.22.3
 
 ## Next Steps
+- Integrate logout and authentication state handling for a user-friendly experience
+- Test the full login/logout flow in the UI
 - Implement action toolbar functionality
 - Add context menus
 - Implement file operations (create, delete, rename)
@@ -58,4 +67,11 @@ This project is a Windows Explorer-like content manager for SenseNet CMS built w
 - Created `feature/initial-repair` branch for bugfixes and project kickoff
 - Improved sensenetService.loadChildren to use robust query and log API results for debugging item listing issues
 - Added debug output to ContentList to help diagnose empty folder listings
+- Switched OIDC authentication to use a singleton browser history object from the 'history' package for compatibility with @sensenet/authentication-oidc-react. This should resolve the spinner/loading issue and allow login/logout UI to appear and function.
 - Committed initial repair changes to feature/initial-repair branch
+- Created feature/login-ui-header-integration branch for login UI integration
+- Updated LoginButton and LoginPage for improved login/logout flow
+
+## [2025-07-06] - feature/initial-repair
+- Committed all staged, modified, and new files with message: 'chore: stage all current changes, add new files, update docs and service, clean state before next feature'.
+- Project is now in a clean state for the next feature or fix.
