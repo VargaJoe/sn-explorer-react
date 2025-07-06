@@ -27,10 +27,10 @@ A Windows Explorer-like content manager for SenseNet CMS, supporting all SenseNe
 ## In Progress Stories
 
 ### Story 01: Navigation - Tree View
-- [ ] Display hierarchical tree of folders and containers
-- [ ] Expand/collapse nodes and load children on demand
-- [ ] Sync selection with main content area
-- [ ] Highlight current path
+- [x] Display hierarchical tree of folders and containers (custom <ul>/<li> explorer, milestone committed 2025-07-06)
+- [x] Expand/collapse nodes and load children on demand (tree now recursively expands and loads all parent nodes to selected node, 2025-07-06)
+- [x] Sync selection with main content area (current path highlights and triggers navigation)
+- [x] Highlight current path (selected node visually highlighted)
 
 ### Story 02: Navigation - Breadcrumbs
 - [ ] Show breadcrumb navigation bar

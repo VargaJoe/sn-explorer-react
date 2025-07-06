@@ -47,25 +47,30 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
     if (currentPath) {
       const pathParts = currentPath.split('/').filter(Boolean);
       let currentExpandPath = '';
-      
-      const newExpanded = pathParts.map((part) => {
+      const newExpanded: string[] = [];
+      const parentPaths: string[] = [];
+      // Build all parent paths up to the current node
+      pathParts.forEach((part, idx) => {
         currentExpandPath = currentExpandPath ? `${currentExpandPath}/${part}` : `/${part}`;
-        return currentExpandPath;
+        newExpanded.push(currentExpandPath);
+        // For all but the last part (the selected node), load children
+        if (idx < pathParts.length - 1) parentPaths.push(currentExpandPath);
       });
-      
-      // Make sure all parent paths are expanded
+      // Expand all parent paths
       setExpandedNodes((prev) => {
         const combined = [...prev, ...newExpanded];
         return Array.from(new Set(combined));
       });
-      
       setSelectedNode(currentPath);
-      
-      // Make sure the path is loaded in the tree
-      if (pathParts.length > 1) {
-        const parentPath = '/' + pathParts.slice(0, -1).join('/');
-        loadNodeChildren(parentPath);
-      }
+      // Recursively load all parent nodes' children (in order)
+      (async () => {
+        for (const parentPath of parentPaths) {
+          const node = findNodeInTree(treeData, parentPath);
+          if (!node || !node.isLoaded) {
+            await loadNodeChildren(parentPath);
+          }
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPath]);
@@ -170,6 +175,39 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
     onPathChange(nodeId);
   };
 
+  // Recursive render function for tree nodes
+  const renderTreeNodes = (nodes: TreeNode[], level = 0) => {
+    return nodes.map((node) => {
+      const isExpanded = expandedNodes.includes(node.path);
+      return (
+        <li key={node.id} style={{ paddingLeft: level * 16 }}>
+          <button
+            style={{
+              background: node.path === selectedNode ? '#e3f2fd' : 'none',
+              border: 'none',
+              color: '#1976d2',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              textAlign: 'left',
+              width: '100%',
+              fontWeight: node.path === selectedNode ? 'bold' : 'normal',
+            }}
+            onClick={() => handleNodeSelect(null as any, node.path)}
+          >
+            <FolderIcon sx={{ color: '#f8d775', verticalAlign: 'middle', mr: 1 }} />
+            {node.name}
+          </button>
+          {/* Render children if expanded and has children */}
+          {isExpanded && node.children && node.children.length > 0 && (
+            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+              {renderTreeNodes(node.children, level + 1)}
+            </ul>
+          )}
+        </li>
+      );
+    });
+  };
+
   return (
     <Box sx={{ p: 1, height: '100%' }}>
       <Typography variant="subtitle1" gutterBottom>
@@ -181,26 +219,7 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
         </Box>
       ) : (
         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-          {treeData.length > 0 && treeData[0].children.map(child => (
-            <li key={child.id}>
-              <button
-                style={{
-                  background: child.path === selectedNode ? '#e3f2fd' : 'none',
-                  border: 'none',
-                  color: '#1976d2',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  textAlign: 'left',
-                  width: '100%',
-                  fontWeight: child.path === selectedNode ? 'bold' : 'normal',
-                }}
-                onClick={() => handleNodeSelect(null as any, child.path)}
-              >
-                <FolderIcon sx={{ color: '#f8d775', verticalAlign: 'middle', mr: 1 }} />
-                {child.name}
-              </button>
-            </li>
-          ))}
+          {treeData.length > 0 && renderTreeNodes(treeData)}
         </ul>
       )}
     </Box>
