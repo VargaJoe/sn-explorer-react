@@ -1,5 +1,6 @@
 import { Repository } from '@sensenet/client-core'
 import { ConstantContent } from '@sensenet/client-core'
+import axios from 'axios'
 
 // Create and configure a Repository instance
 const createRepository = () => {
@@ -73,11 +74,39 @@ export const getContent = async (path: string) => {
   }
 }
 
-// Export repository and methods
+// Add login, logout, getCurrentUser methods for authentication
+const API_BASE_URL = process.env.REACT_APP_SN_API_URL || 'http://localhost:8080'
+
+const login = async (username: string, password: string) => {
+  const response = await axios.post(
+    `${API_BASE_URL}/odata/Authentication/Login`,
+    {
+      username,
+      password,
+    },
+    {
+      withCredentials: true,
+    }
+  )
+  return response.data
+}
+
+const logout = async () => {
+  await axios.post(`${API_BASE_URL}/odata/Authentication/Logout`, {}, { withCredentials: true })
+}
+
+const getCurrentUser = async () => {
+  const response = await axios.get(`${API_BASE_URL}/odata/CurrentUser`, { withCredentials: true })
+  return response.data
+}
+
 const sensenetService = {
   repository,
   loadChildren,
-  getContent
+  getContent,
+  login,
+  logout,
+  getCurrentUser,
 }
 
 export default sensenetService
