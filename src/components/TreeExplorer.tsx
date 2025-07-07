@@ -44,35 +44,47 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Helper to find a node in the tree by path
+  const findNodeInTree = (nodes: TreeNode[], path: string): TreeNode | null => {
+    for (const node of nodes) {
+      if (node.path === path) {
+        return node;
+      }
+      if (node.children && node.children.length > 0) {
+        const found = findNodeInTree(node.children, path);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  // Recursively expand and load all nodes down the path
+  const expandAndLoadPath = async (fullPath: string) => {
+    const pathParts = fullPath.split('/').filter(Boolean);
+    let currentPath = '';
+    let parentNodes = treeData;
+    let expanded: string[] = ['/Root'];
+    for (let i = 0; i < pathParts.length; i++) {
+      currentPath = currentPath ? `${currentPath}/${pathParts[i]}` : `/${pathParts[i]}`;
+      expanded.push(currentPath);
+      let node = findNodeInTree(parentNodes, currentPath);
+      if (!node || !node.isLoaded) {
+        await loadNodeChildren(currentPath);
+        // After loading, get the updated node reference
+        node = findNodeInTree(treeData, currentPath);
+      }
+      parentNodes = node && node.children ? node.children : [];
+    }
+    setExpandedNodes(prev => Array.from(new Set([...prev, ...expanded])));
+    setSelectedNode(fullPath);
+  };
+
   // Expand nodes based on current path
   useEffect(() => {
     if (currentPath) {
-      const pathParts = currentPath.split('/').filter(Boolean);
-      let currentExpandPath = '';
-      const newExpanded: string[] = [];
-      const parentPaths: string[] = [];
-      // Build all parent paths up to the current node
-      pathParts.forEach((part, idx) => {
-        currentExpandPath = currentExpandPath ? `${currentExpandPath}/${part}` : `/${part}`;
-        newExpanded.push(currentExpandPath);
-        // For all but the last part (the selected node), load children
-        if (idx < pathParts.length - 1) parentPaths.push(currentExpandPath);
-      });
-      // Expand all parent paths
-      setExpandedNodes((prev) => {
-        const combined = [...prev, ...newExpanded];
-        return Array.from(new Set(combined));
-      });
-      setSelectedNode(currentPath);
-      // Recursively load all parent nodes' children (in order)
-      (async () => {
-        for (const parentPath of parentPaths) {
-          const node = findNodeInTree(treeData, parentPath);
-          if (!node || !node.isLoaded) {
-            await loadNodeChildren(parentPath);
-          }
-        }
-      })();
+      expandAndLoadPath(currentPath);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPath]);
@@ -137,39 +149,6 @@ const TreeExplorer: React.FC<TreeExplorerProps> = ({ currentPath, onPathChange }
       updateNode(updatedTree);
       return updatedTree;
     });
-  };
-
-  const handleNodeToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
-    // Always keep /Root expanded
-    if (!nodeIds.includes('/Root')) nodeIds.push('/Root');
-    setExpandedNodes(nodeIds);
-    
-    // Load children for newly expanded nodes
-    const newlyExpanded = nodeIds.filter(nodeId => !expandedNodes.includes(nodeId));
-    
-    newlyExpanded.forEach(path => {
-      const nodeInTree = findNodeInTree(treeData, path);
-      if (nodeInTree && !nodeInTree.isLoaded) {
-        loadNodeChildren(path);
-      }
-    });
-  };
-  
-  const findNodeInTree = (nodes: TreeNode[], path: string): TreeNode | null => {
-    for (const node of nodes) {
-      if (node.path === path) {
-        return node;
-      }
-      
-      if (node.children && node.children.length > 0) {
-        const found = findNodeInTree(node.children, path);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    
-    return null;
   };
 
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
