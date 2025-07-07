@@ -21,6 +21,7 @@ A Windows Explorer-like content manager for SenseNet CMS, supporting all SenseNe
 - [x] Remove deprecated local authentication code
 - [x] Add authentication guide documentation
 - [x] Add enhanced debug logging to TreeExplorer.tsx to trace the output of sensenetService.loadChildren and the state of treeData after loading the root node. Now always shows the root node even if it has no children, to ensure the tree is never empty. (2025-07-06)
+- [x] Fixed stale node reference in TreeExplorer expand/collapse logic: after loading children, node is always expanded, ensuring children appear on first click. Added debug logs before and after loading children. (2025-07-06)
 
 ---
 

@@ -1,7 +1,7 @@
 // Sensenet OIDC and repository configuration
 export const repositoryUrl = process.env.REACT_APP_REPOSITORY_URL || 'https://insql-daily.test.sensenet.cloud';
 export const configuration = {
-  client_id: process.env.REACT_APP_CLIENT_ID || 'hsW1ePIUQyTfvAOM', // set in .env for production
+  client_id: process.env.REACT_APP_CLIENT_ID || 'zlv1WLKyXDAq9RcR', // set in .env for production
   automaticSilentRenew: true,
   redirect_uri: `${window.location.origin}/authentication/callback`,
   response_type: 'code',
