@@ -20,16 +20,26 @@ A Windows Explorer-like content manager for SenseNet CMS, supporting all SenseNe
 - [x] Implement OIDC authentication (login/logout UI)
 - [x] Remove deprecated local authentication code
 - [x] Add authentication guide documentation
+### Story 01: Navigation - Tree View
+- [x] Display hierarchical tree of folders and containers (custom <ul>/<li> explorer, milestone committed 2025-07-06)
+- [x] Expand/collapse nodes and load children on demand (tree now recursively expands and loads all parent nodes to selected node, 2025-07-06)
+- [x] Sync selection with main content area (current path highlights and triggers navigation)
+- [x] Highlight current path (selected node visually highlighted)
+- [x] Add enhanced debug logging to TreeExplorer.tsx to trace the output of sensenetService.loadChildren and the state of treeData after loading the root node. Now always shows the root node even if it has no children, to ensure the tree is never empty. (2025-07-06)
+- [x] Fixed stale node reference in TreeExplorer expand/collapse logic: after loading children, node is always expanded, ensuring children appear on first click. Added debug logs before and after loading children. (2025-07-06)
+- [x] TreeExplorer: fixed double-click issue on chevron, now always loads and expands on first click. (2025-07-07)
+- [x] TreeExplorer: recursively expands and loads all nodes down the current path, so deep links always show the full expanded tree. (2025-07-07)
+- [x] Cleaned up unused code and improved modularity in TreeExplorer. (2025-07-07)
+
+## Ad Hoc / Technical Tasks
+- [x] Switched all sensitive config to .env and added .env to .gitignore to prevent secrets from being committed. (2025-07-07)
+- [x] Add .env.template for sharing non-secret config structure (2025-07-07)
+- [x] Remove all hardcoded secrets from committed code (2025-07-07)
 
 ---
 
 ## In Progress Stories
 
-### Story 01: Navigation - Tree View
-- [ ] Display hierarchical tree of folders and containers
-- [ ] Expand/collapse nodes and load children on demand
-- [ ] Sync selection with main content area
-- [ ] Highlight current path
 
 ### Story 02: Navigation - Breadcrumbs
 - [ ] Show breadcrumb navigation bar
